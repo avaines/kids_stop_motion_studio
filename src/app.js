@@ -11,7 +11,7 @@ import { makeGif } from "./gif-encoder.js";
     playbackDialog: $("#playbackDialog"), playbackCanvas: $("#playbackCanvas"), stopPlayback: $("#stopPlayback"),
     onion: $("#onionButton"), onionLayer: $("#onionLayer"), switchCamera: $("#switchButton"), toast: $("#toast"), countdown: $("#countdown"),
     frameActions: $("#frameActions"), selectedLabel: $("#selectedLabel"), redo: $("#redoButton"), remove: $("#deleteButton"), closeActions: $("#closeActions"),
-    help: $("#helpDialog"), helpButton: $("#helpButton"), closeHelp: $("#closeHelp"), gotIt: $("#gotItButton"), exportDialog: $("#exportDialog"),
+    exportDialog: $("#exportDialog"),
     exporting: $("#exportingView"), exportDone: $("#exportDone"), progress: $("#exportProgress"), gifPreview: $("#gifPreview"), download: $("#downloadLink"), closeExport: $("#closeExport")
   };
   let frames = [], stream = null, facing = "environment", effect = "normal", selected = -1, replaceIndex = -1, playing = false, playTimer = null, previewIndex = 0, onion = false, currentGifUrl = null, deleteConfirm = false, picturePage = 0;
@@ -177,8 +177,7 @@ import { makeGif } from "./gif-encoder.js";
   els.onion.addEventListener("click", () => { onion = !onion; updateOnion(); announce(onion ? "Ghost picture on" : "Ghost picture off"); });
   els.switchCamera.addEventListener("click", async () => { facing = facing === "environment" ? "user" : "environment"; await startCamera(); announce("Camera flipped"); });
   document.querySelectorAll(".effect").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".effect").forEach(b => { b.classList.toggle("active", b === button); b.setAttribute("aria-pressed", String(b === button)); }); effect = button.dataset.effect; updateLiveEffect(); announce(`${button.textContent.trim()} style`); }));
-  els.speed.addEventListener("change", persist); els.helpButton.addEventListener("click", () => openDialog(els.help)); els.closeHelp.addEventListener("click", () => els.help.close()); els.gotIt.addEventListener("click", () => els.help.close());
+  els.speed.addEventListener("change", persist);
   els.closeExport.addEventListener("click", () => els.exportDialog.close()); window.addEventListener("resize", () => { renderFrames(); if (els.picturesDialog.open) renderPictureBoard(); }); window.addEventListener("beforeunload", () => stream?.getTracks().forEach(track => track.stop()));
   updateLiveEffect(); restore();
-  try { if (!localStorage.getItem("wiggle-welcomed")) { setTimeout(() => openDialog(els.help), 350); localStorage.setItem("wiggle-welcomed", "yes"); } } catch (_) { /* Storage may be unavailable in private browsing. */ }
 })();

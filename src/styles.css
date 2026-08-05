@@ -191,3 +191,47 @@ main{width:min(1400px,94vw);margin:24px auto 0;display:grid;gap:18px;padding-bot
 
 /* The lower area is now a compact movie toolbar; pictures live in the board. */
 .timeline-heading{margin-bottom:0}
+
+/* Fluid right-pane sizing: keep controls large, but never let them overflow. */
+@media(min-width:851px){
+  .camera-card{grid-template-columns:minmax(0,1fr) clamp(210px,22vw,270px)}
+  .studio-controls{
+    min-height:0;
+    overflow:hidden;
+    padding:clamp(8px,2.1dvh,24px) clamp(12px,1.8vw,20px);
+  }
+  .tool-label{margin-bottom:clamp(4px,1dvh,9px);font-size:clamp(9px,1.3dvh,11px)}
+  .effect-options{gap:clamp(4px,.9dvh,7px)}
+  .effect{min-height:clamp(38px,7.2dvh,66px);border-radius:clamp(11px,1.8dvh,16px);font-size:clamp(10px,1.7dvh,13px);gap:clamp(4px,.8dvh,8px)}
+  .effect-dot{width:clamp(21px,3.2dvh,28px);height:clamp(21px,3.2dvh,28px);border-radius:clamp(6px,1dvh,9px)}
+  .capture-zone{margin:clamp(5px,1.6dvh,14px) 0}
+  .capture-button{width:clamp(86px,17dvh,150px);height:clamp(86px,17dvh,150px);border-width:clamp(6px,1.1dvh,10px)}
+  .capture-button svg{width:clamp(34px,6.2dvh,56px);height:clamp(34px,6.2dvh,56px)}
+  .capture-zone strong{margin-top:clamp(5px,1.4dvh,14px);font-size:clamp(13px,2.2dvh,19px)}
+  .helper-row{gap:clamp(5px,1dvh,9px)}
+  .helper-button{min-height:clamp(40px,6.6dvh,60px);border-radius:clamp(11px,1.7dvh,16px);font-size:clamp(11px,1.6dvh,14px)}
+  .helper-button>svg{width:clamp(22px,3.2dvh,28px);height:clamp(22px,3.2dvh,28px)}
+  .pane-actions{margin-top:clamp(4px,1.3dvh,12px)}
+  .pane-actions .icon-button,.pane-actions .save-button{height:clamp(44px,6.5dvh,58px)}
+  .pane-actions .icon-button{flex-basis:clamp(44px,6.5dvh,58px);width:clamp(44px,6.5dvh,58px)}
+}
+
+@media(min-width:851px) and (max-height:700px){
+  .pane-actions .save-button span{display:none}
+  .pane-actions .save-button{flex:0 0 clamp(44px,6.5dvh,58px);width:clamp(44px,6.5dvh,58px);padding:0}
+  .pane-actions .save-button svg{width:26px;height:26px}
+}
+
+@media(min-width:851px) and (max-height:560px){
+  .studio-controls{justify-content:space-around}
+  .tool-label,.capture-zone strong{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .effect{min-height:36px}
+  .capture-button{width:78px;height:78px}
+  .helper-button{min-height:37px}
+  .pane-actions .icon-button,.pane-actions .save-button{height:42px;width:42px;flex-basis:42px}
+}
+
+/* Saving is a single, obvious full-width action beneath the camera tools. */
+.pane-actions{display:block}
+.pane-actions .save-button{display:flex;width:100%;max-width:none;min-width:0;flex:none;padding-inline:14px}
+.pane-actions .save-button span{display:inline}
