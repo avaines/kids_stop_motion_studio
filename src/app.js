@@ -15,6 +15,7 @@ import { makeGif } from "./gif-encoder.js";
     exporting: $("#exportingView"), exportDone: $("#exportDone"), progress: $("#exportProgress"), gifPreview: $("#gifPreview"), download: $("#downloadLink"), closeExport: $("#closeExport")
   };
   let frames = [], stream = null, facing = "environment", effect = "normal", selected = -1, replaceIndex = -1, playing = false, playTimer = null, previewIndex = 0, onion = false, currentGifUrl = null, deleteConfirm = false, removeAllConfirm = false, picturePage = 0;
+  const CAPTURE_MAX_WIDTH = 960, GIF_MAX_WIDTH = 640, FRAME_JPEG_QUALITY = .92;
   const captureCanvas = document.createElement("canvas"), captureCtx = captureCanvas.getContext("2d", { willReadFrequently: true });
   const playCtx = els.playbackCanvas.getContext("2d");
 
@@ -77,7 +78,7 @@ import { makeGif } from "./gif-encoder.js";
     } catch (error) { stream = null; els.empty.classList.remove("hidden"); announce(["NotAllowedError", "SecurityError"].includes(error.name) ? "Ask a grown-up to allow the camera" : "Camera could not start"); }
   }
 
-  function dimensions(maxWidth = 640) {
+  function dimensions(maxWidth = CAPTURE_MAX_WIDTH) {
     const sourceW = els.video.videoWidth || 1280, sourceH = els.video.videoHeight || 720, width = Math.min(maxWidth, sourceW);
     return { width: Math.round(width / 2) * 2, height: Math.round(width * sourceH / sourceW / 2) * 2 };
   }
@@ -93,7 +94,7 @@ import { makeGif } from "./gif-encoder.js";
     }
     ctx.putImageData(image, 0, 0);
   }
-  function canvasBlob(canvas, type = "image/jpeg", quality = .86) {
+  function canvasBlob(canvas, type = "image/jpeg", quality = FRAME_JPEG_QUALITY) {
     return new Promise(resolve => canvas.toBlob(async blob => {
       if (blob) resolve(blob);
       else resolve(await (await fetch(canvas.toDataURL(type, quality))).blob());
@@ -182,7 +183,7 @@ import { makeGif } from "./gif-encoder.js";
     if (frames.length < 2) return; if (playing) stopPlaying();
     els.exporting.hidden = false; els.exportDone.hidden = true; els.progress.value = 0; openDialog(els.exportDialog);
     await new Promise(resolve => setTimeout(resolve, 80));
-    const first = await decodeBlob(frames[0].blob), maxW = 480, width = Math.round(Math.min(maxW, first.width) / 2) * 2, height = Math.round(width * first.height / first.width / 2) * 2; first.close();
+    const first = await decodeBlob(frames[0].blob), width = Math.round(Math.min(GIF_MAX_WIDTH, first.width) / 2) * 2, height = Math.round(width * first.height / first.width / 2) * 2; first.close();
     const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d", { willReadFrequently: true }); canvas.width = width; canvas.height = height; const rgbaFrames = [];
     for (let i = 0; i < frames.length; i++) { const decoded = await decodeBlob(frames[i].blob); ctx.drawImage(decoded.source, 0, 0, width, height); decoded.close(); rgbaFrames.push(ctx.getImageData(0, 0, width, height).data); els.progress.value = (i / frames.length) * 35; await new Promise(resolve => setTimeout(resolve, 0)); }
     const delay = 1000 / Number(els.speed.value); const gif = makeGif(rgbaFrames, width, height, delay, value => { els.progress.value = 35 + value * 65; });
