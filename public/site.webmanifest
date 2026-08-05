@@ -1,0 +1,18 @@
+{
+  "name": "Wiggle Studio",
+  "short_name": "Wiggle",
+  "description": "A simple, private stop-motion studio for little filmmakers.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f7f3ed",
+  "theme_color": "#6c4cff",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

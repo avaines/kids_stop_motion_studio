@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#6c4cff" />
+    <meta name="description" content="A simple, private stop-motion studio made for little filmmakers." />
+    <title>Wiggle Studio</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <svg class="svg-defs" aria-hidden="true">
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7.5h3l1.4-2h7.2l1.4 2h3a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="4"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7V5Z"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></symbol>
+      <symbol id="i-magic" viewBox="0 0 24 24"><path d="m14 4 1-2 1 2 2 1-2 1-1 2-1-2-2-1 2-1ZM5 13l2-4 2 4 4 2-4 2-2 4-2-4-4-2 4-2ZM18 14l1.5-3 1.5 3 3 1.5-3 1.5-1.5 3-1.5-3-3-1.5 3-1.5Z"/></symbol>
+      <symbol id="i-ghost" viewBox="0 0 24 24"><path d="M5 20V10a7 7 0 0 1 14 0v10l-3-2-2 2-2-2-2 2-2-2-3 2Z"/><circle cx="9.5" cy="11" r="1"/><circle cx="14.5" cy="11" r="1"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 19v2h16v-2"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/></symbol>
+      <symbol id="i-redo" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17a8 8 0 0 1 13.5-6L20 12"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.6 2.1c-.9.5-1.4 1-1.4 2.2M12 17h.01"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="i-switch" viewBox="0 0 24 24"><path d="M7 7h11l-3-3m3 3-3 3M17 17H6l3 3m-3-3 3-3"/></symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Wiggle Studio home">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>Wiggle <b>Studio</b></span>
+        </a>
+        <div class="top-actions">
+          <button class="icon-button" id="helpButton" aria-label="Show how to use the studio"><svg><use href="#i-help"/></svg></button>
+          <button class="save-button" id="saveButton" disabled><svg><use href="#i-download"/></svg><span>Save my movie</span></button>
+        </div>
+      </header>
+
+      <main>
+        <section class="camera-card" aria-label="Camera studio">
+          <div class="viewfinder" id="viewfinder">
+            <video id="camera" autoplay muted playsinline></video>
+            <canvas id="previewCanvas"></canvas>
+            <img id="onionLayer" alt="" />
+            <div class="thirds-grid" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="camera-empty" id="cameraEmpty">
+              <div class="start-art" aria-hidden="true">
+                <span class="sun"></span><span class="hill hill-one"></span><span class="hill hill-two"></span>
+                <span class="clay-character"><i></i><b></b></span>
+              </div>
+              <h1>Ready to make things move?</h1>
+              <p>Stand your tablet still, then point it at your scene.</p>
+              <button class="start-button" id="startButton"><svg><use href="#i-camera"/></svg> Start camera</button>
+              <small>Your pictures stay on this device.</small>
+            </div>
+            <div class="countdown" id="countdown" aria-live="assertive"></div>
+            <div class="toast" id="toast" role="status" aria-live="polite"></div>
+          </div>
+
+          <div class="studio-controls">
+            <div class="tool-group effects" aria-label="Picture style">
+              <span class="tool-label">Picture style</span>
+              <div class="effect-options" id="effectOptions">
+                <button class="effect active" data-effect="normal" aria-pressed="true"><span class="effect-dot normal"></span>Normal</button>
+                <button class="effect" data-effect="pop" aria-pressed="false"><span class="effect-dot pop"></span>Pop!</button>
+                <button class="effect" data-effect="comic" aria-pressed="false"><span class="effect-dot comic"></span>Comic</button>
+                <button class="effect" data-effect="mono" aria-pressed="false"><span class="effect-dot mono"></span>B&amp;W</button>
+              </div>
+            </div>
+
+            <div class="capture-zone">
+              <button class="capture-button" id="captureButton" disabled aria-label="Take a picture">
+                <span><svg><use href="#i-camera"/></svg></span>
+              </button>
+              <strong id="captureLabel">Take a picture</strong>
+            </div>
+
+            <div class="tool-group helper-tools">
+              <span class="tool-label">Helpful tools</span>
+              <div class="helper-row">
+                <button class="helper-button" id="onionButton" aria-pressed="false" disabled><svg><use href="#i-ghost"/></svg><span>Ghost</span><i class="switch"></i></button>
+                <button class="helper-button compact" id="switchButton" disabled><svg><use href="#i-switch"/></svg><span>Flip camera</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="timeline-card" aria-labelledby="framesTitle">
+          <div class="timeline-heading">
+            <div><h2 id="framesTitle">Your pictures</h2><span id="frameCount">0 pictures</span></div>
+            <div class="speed-control">
+              <label for="speedRange">Movie speed</label>
+              <span>Slow</span><input id="speedRange" type="range" min="2" max="10" value="5" step="1"/><span>Fast</span>
+            </div>
+            <button class="play-button" id="playButton" disabled><svg><use href="#i-play"/></svg><span>Play</span></button>
+          </div>
+          <div class="frame-strip" id="frameStrip">
+            <div class="empty-timeline" id="emptyTimeline"><span>1</span><p>Your first picture will pop up here!</p></div>
+          </div>
+          <div class="frame-actions" id="frameActions" hidden>
+            <span id="selectedLabel">Picture 1</span>
+            <button id="redoButton"><svg><use href="#i-redo"/></svg> Take again</button>
+            <button class="danger" id="deleteButton"><svg><use href="#i-trash"/></svg> Remove</button>
+            <button class="close-actions" id="closeActions" aria-label="Close picture tools"><svg><use href="#i-close"/></svg></button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="helpDialog" class="help-dialog">
+      <button class="dialog-close" id="closeHelp" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      <span class="eyebrow">Three tiny steps</span>
+      <h2>Make your movie!</h2>
+      <div class="lesson-steps">
+        <article><span class="step-blob purple"><b>1</b><svg><use href="#i-camera"/></svg></span><h3>Snap</h3><p>Take one picture.</p></article>
+        <article><span class="step-blob yellow"><b>2</b><span class="nudge">↝</span></span><h3>Move</h3><p>Move your toy a teeny bit.</p></article>
+        <article><span class="step-blob coral"><b>3</b><svg><use href="#i-play"/></svg></span><h3>Play</h3><p>Do it again, then watch!</p></article>
+      </div>
+      <button class="got-it" id="gotItButton">Got it — let's make!</button>
+    </dialog>
+
+    <dialog id="exportDialog" class="export-dialog">
+      <div class="exporting" id="exportingView">
+        <div class="movie-loader"><i></i><i></i><i></i></div>
+        <h2>Making your movie…</h2>
+        <p>Squishing the pictures together!</p>
+        <progress id="exportProgress" max="100" value="0"></progress>
+      </div>
+      <div class="export-done" id="exportDone" hidden>
+        <span class="celebrate">Ta-da!</span>
+        <h2>Your movie is ready</h2>
+        <img id="gifPreview" alt="Your finished stop-motion movie" />
+        <div class="export-actions">
+          <a id="downloadLink" class="download-link" download="my-wiggle-movie.gif"><svg><use href="#i-download"/></svg> Download movie</a>
+          <button id="closeExport">Back to studio</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
