@@ -235,3 +235,26 @@ main{width:min(1400px,94vw);margin:24px auto 0;display:grid;gap:18px;padding-bot
 .pane-actions{display:block}
 .pane-actions .save-button{display:flex;width:100%;max-width:none;min-width:0;flex:none;padding-inline:14px}
 .pane-actions .save-button span{display:inline}
+
+/* Remove-all is isolated at the far-left, away from single-frame editing. */
+.pictures-dialog header{display:grid;grid-template-columns:82px minmax(0,1fr) 64px;gap:14px}
+.picture-board-title{justify-self:center}
+.pictures-dialog header .remove-all,.pictures-dialog header .close-pictures{position:static;height:58px}
+.pictures-dialog header .remove-all{justify-self:start;width:76px;border-radius:17px;background:#ffe0dc;color:#b83f36;display:flex;flex-direction:column;gap:0;font-size:11px;font-weight:800}
+.pictures-dialog header .close-pictures{width:58px}
+.pictures-dialog header .remove-all svg{width:29px;height:29px}
+.pictures-dialog header .remove-all svg,.pictures-dialog header .remove-all span{transform:translateY(2px)}
+.pictures-dialog header .close-pictures{justify-self:end}
+.pictures-dialog header .remove-all.confirm{background:var(--coral);color:white;outline:4px solid #ffc9c3;animation:confirm-remove .4s ease-in-out infinite alternate}
+.pictures-dialog header .remove-all.confirm svg{width:29px;height:29px}
+@media(max-width:600px){
+  .pictures-dialog header{grid-template-columns:72px minmax(0,1fr) 56px;padding-inline:9px;gap:5px}
+  .pictures-dialog header .remove-all{width:68px;height:54px}
+  .pictures-dialog header .close-pictures{width:54px;height:54px}
+}
+
+.board-pagination[hidden]{display:none!important}
+.pictures-dialog footer.no-pagination{justify-content:center}
+.pictures-dialog.single-page:not(.editing){grid-template-rows:76px minmax(0,1fr) 0}
+.pictures-dialog.single-page:not(.editing) footer{display:none}
+@media(max-width:700px){.pictures-dialog.single-page:not(.editing){grid-template-rows:70px minmax(0,1fr) 0}}
