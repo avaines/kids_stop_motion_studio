@@ -45,6 +45,23 @@ import { makeGif } from "./gif-encoder.js";
     }
   }
 
+  async function startCameraIfAlreadyAllowed() {
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) return;
+    try {
+      if (navigator.permissions?.query) {
+        const permission = await navigator.permissions.query({ name: "camera" });
+        if (permission.state === "granted") { await startCamera(); return; }
+        if (permission.state === "prompt" || permission.state === "denied") return;
+      }
+    } catch (_) { /* Safari and older Firefox versions may not expose camera permission queries. */ }
+    try {
+      // Browsers generally expose device labels only after camera permission
+      // has previously been granted, making this a prompt-free fallback.
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      if (devices.some(device => device.kind === "videoinput" && device.label)) await startCamera();
+    } catch (_) { /* Keep the manual Start Camera button. */ }
+  }
+
   async function startCamera() {
     if (!window.isSecureContext) {
       els.empty.querySelector("p").textContent = "The camera needs HTTPS, or localhost while testing.";
@@ -189,5 +206,5 @@ import { makeGif } from "./gif-encoder.js";
   document.querySelectorAll(".effect").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".effect").forEach(b => { b.classList.toggle("active", b === button); b.setAttribute("aria-pressed", String(b === button)); }); effect = button.dataset.effect; updateLiveEffect(); announce(`${button.textContent.trim()} style`); }));
   els.speed.addEventListener("change", persist);
   els.closeExport.addEventListener("click", () => els.exportDialog.close()); window.addEventListener("resize", () => { renderFrames(); if (els.picturesDialog.open) renderPictureBoard(); }); window.addEventListener("beforeunload", () => stream?.getTracks().forEach(track => track.stop()));
-  updateLiveEffect(); restore();
+  updateLiveEffect(); restore(); startCameraIfAlreadyAllowed();
 })();
