@@ -5,19 +5,23 @@ import { makeGif } from "./gif-encoder.js";
   const $ = selector => document.querySelector(selector);
   const els = {
     video: $("#camera"), canvas: $("#previewCanvas"), empty: $("#cameraEmpty"), start: $("#startButton"), capture: $("#captureButton"), captureLabel: $("#captureLabel"),
-    strip: $("#frameStrip"), emptyTimeline: $("#emptyTimeline"), count: $("#frameCount"), play: $("#playButton"), save: $("#saveButton"), speed: $("#speedRange"),
+    count: $("#frameCount"), play: $("#playButton"), save: $("#saveButton"), speed: $("#speedRange"),
+    expandFrames: $("#expandFramesButton"), picturesDialog: $("#picturesDialog"),
+    pictureBoard: $("#pictureBoard"), closePictures: $("#closePictures"), previousPicturePage: $("#previousPicturePage"), nextPicturePage: $("#nextPicturePage"), picturePageDots: $("#picturePageDots"),
+    playbackDialog: $("#playbackDialog"), playbackCanvas: $("#playbackCanvas"), stopPlayback: $("#stopPlayback"),
     onion: $("#onionButton"), onionLayer: $("#onionLayer"), switchCamera: $("#switchButton"), toast: $("#toast"), countdown: $("#countdown"),
     frameActions: $("#frameActions"), selectedLabel: $("#selectedLabel"), redo: $("#redoButton"), remove: $("#deleteButton"), closeActions: $("#closeActions"),
     help: $("#helpDialog"), helpButton: $("#helpButton"), closeHelp: $("#closeHelp"), gotIt: $("#gotItButton"), exportDialog: $("#exportDialog"),
     exporting: $("#exportingView"), exportDone: $("#exportDone"), progress: $("#exportProgress"), gifPreview: $("#gifPreview"), download: $("#downloadLink"), closeExport: $("#closeExport")
   };
-  let frames = [], stream = null, facing = "environment", effect = "normal", selected = -1, replaceIndex = -1, playing = false, playTimer = null, previewIndex = 0, onion = false, currentGifUrl = null, deleteConfirm = false;
+  let frames = [], stream = null, facing = "environment", effect = "normal", selected = -1, replaceIndex = -1, playing = false, playTimer = null, previewIndex = 0, onion = false, currentGifUrl = null, deleteConfirm = false, picturePage = 0;
   const captureCanvas = document.createElement("canvas"), captureCtx = captureCanvas.getContext("2d", { willReadFrequently: true });
-  const playCtx = els.canvas.getContext("2d");
+  const playCtx = els.playbackCanvas.getContext("2d");
 
   function announce(message) { els.toast.textContent = message; els.toast.classList.add("show"); clearTimeout(announce.timer); announce.timer = setTimeout(() => els.toast.classList.remove("show"), 1700); }
   function plural(n) { return `${n} picture${n === 1 ? "" : "s"}`; }
-  function setButtons() { const has = frames.length > 0; els.play.disabled = !has; els.save.disabled = frames.length < 2; els.onion.disabled = !has || !stream; els.count.textContent = plural(frames.length); }
+  function setButtons() { const has = frames.length > 0; els.play.disabled = !has; els.expandFrames.disabled = !has; els.save.disabled = frames.length < 2; els.onion.disabled = !has || !stream; els.count.textContent = plural(frames.length); }
+  function boardPageSize() { return window.innerHeight <= 650 && window.innerWidth > window.innerHeight ? 8 : window.innerWidth <= 600 ? 9 : 12; }
   function updateLiveEffect() { els.video.dataset.effect = effect; }
   function openDialog(dialog) { if (!dialog.open) dialog.showModal(); }
 
@@ -104,39 +108,47 @@ import { makeGif } from "./gif-encoder.js";
   }
 
   function renderFrames() {
-    els.strip.querySelectorAll(".frame").forEach(node => node.remove());
-    els.emptyTimeline.hidden = frames.length > 0;
-    frames.forEach((frame, index) => {
-      const button = document.createElement("button"); button.className = `frame${selected === index ? " selected" : ""}${index === frames.length - 1 ? " is-last" : ""}`;
-      button.dataset.index = index; button.setAttribute("aria-label", `Picture ${index + 1}. Tap for options.`);
-      const image = document.createElement("img"); image.src = frame.url; image.alt = "";
-      const number = document.createElement("span"); number.className = "number"; number.textContent = index + 1;
-      button.append(image, number); els.strip.append(button);
-    });
-    els.frameActions.hidden = selected < 0; if (selected >= 0) els.selectedLabel.textContent = `Picture ${selected + 1}`;
+    els.frameActions.hidden = selected < 0; els.frameActions.closest("footer").classList.toggle("editing", selected >= 0); if (selected >= 0) els.selectedLabel.textContent = `Picture ${selected + 1}`;
     setButtons();
   }
-  function resetDelete() { deleteConfirm = false; els.remove.innerHTML = '<svg><use href="#i-trash"/></svg> Remove'; }
-  function selectFrame(index) { resetDelete(); selected = selected === index ? -1 : index; renderFrames(); if (selected >= 0) els.strip.querySelector(`[data-index="${selected}"]`)?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }); }
+
+  function renderPictureBoard() {
+    els.pictureBoard.replaceChildren(); const pageSize = boardPageSize(), pageCount = Math.max(1, Math.ceil(frames.length / pageSize)); picturePage = Math.min(picturePage, pageCount - 1);
+    const firstIndex = picturePage * pageSize;
+    frames.slice(firstIndex, firstIndex + pageSize).forEach((frame, offset) => {
+      const index = firstIndex + offset, button = document.createElement("button"); button.className = `board-frame${selected === index ? " selected" : ""}`; button.dataset.index = index; button.setAttribute("aria-label", `Open picture ${index + 1}`);
+      const image = document.createElement("img"); image.src = frame.url; image.alt = ""; const number = document.createElement("span"); number.textContent = index + 1; button.append(image, number); els.pictureBoard.append(button);
+    });
+    els.previousPicturePage.disabled = picturePage === 0; els.nextPicturePage.disabled = picturePage >= pageCount - 1;
+    els.picturePageDots.textContent = Array.from({ length: pageCount }, (_, index) => index === picturePage ? "●" : "○").join(" ");
+  }
+  function resetDelete() { deleteConfirm = false; els.remove.classList.remove("confirm"); els.remove.innerHTML = '<svg><use href="#i-trash"/></svg> Remove'; }
+  function selectFrame(index) { resetDelete(); selected = selected === index ? -1 : index; renderFrames(); }
   async function deleteFrame() {
     if (selected < 0) return;
-    if (!deleteConfirm) { deleteConfirm = true; els.remove.textContent = "Tap again to remove"; announce("One more tap to remove it"); clearTimeout(deleteFrame.timer); deleteFrame.timer = setTimeout(resetDelete, 3000); return; }
+    if (!deleteConfirm) { deleteConfirm = true; els.remove.classList.add("confirm"); els.remove.innerHTML = '<svg><use href="#i-trash"/></svg><svg><use href="#i-trash"/></svg>'; announce("Tap the red button once more"); clearTimeout(deleteFrame.timer); deleteFrame.timer = setTimeout(resetDelete, 3000); return; }
     const number = selected + 1; resetDelete(); URL.revokeObjectURL(frames[selected].url); frames.splice(selected, 1); selected = -1; replaceIndex = -1;
-    await persist(); renderFrames(); updateOnion(); announce(`Picture ${number} removed`);
+    await persist(); renderFrames(); if (els.picturesDialog.open) renderPictureBoard(); updateOnion(); announce(`Picture ${number} removed`);
   }
-  function prepareRedo() { if (selected < 0) return; replaceIndex = selected; selected = -1; els.captureLabel.textContent = `Fix picture ${replaceIndex + 1}`; renderFrames(); announce("Tap the big camera button"); }
+  function prepareRedo() { if (selected < 0) return; replaceIndex = selected; selected = -1; if (els.picturesDialog.open) els.picturesDialog.close(); els.captureLabel.textContent = `Fix picture ${replaceIndex + 1}`; renderFrames(); announce("Tap the big camera button"); }
   function updateOnion() { const last = frames.at(-1); els.onionLayer.style.display = onion && last && stream ? "block" : "none"; if (last) els.onionLayer.src = last.url; els.onion.setAttribute("aria-pressed", String(onion)); }
 
-  function stopPlaying() { playing = false; clearTimeout(playTimer); els.canvas.style.display = "none"; els.video.style.display = "block"; els.play.innerHTML = '<svg><use href="#i-play"/></svg><span>Play</span>'; updateOnion(); }
+  function stopPlaying() {
+    playing = false; clearTimeout(playTimer);
+    if (document.fullscreenElement === els.playbackDialog) document.exitFullscreen().catch(() => {});
+    if (els.playbackDialog.open) els.playbackDialog.close();
+    els.play.innerHTML = '<svg><use href="#i-play"/></svg><span>Play</span>'; updateOnion();
+  }
   async function drawFrame(frame) {
-    const decoded = await decodeBlob(frame.blob); els.canvas.width = decoded.width; els.canvas.height = decoded.height; playCtx.drawImage(decoded.source, 0, 0); decoded.close();
+    const decoded = await decodeBlob(frame.blob); els.playbackCanvas.width = decoded.width; els.playbackCanvas.height = decoded.height; playCtx.drawImage(decoded.source, 0, 0); decoded.close();
   }
   async function playNext() {
-    if (!playing || !frames.length) return; await drawFrame(frames[previewIndex]); previewIndex = (previewIndex + 1) % frames.length;
+    if (!playing || !frames.length) return; await drawFrame(frames[previewIndex]); if (!playing) return; previewIndex = (previewIndex + 1) % frames.length;
     playTimer = setTimeout(playNext, 1000 / Number(els.speed.value));
   }
   function togglePlay() {
-    if (playing) { stopPlaying(); return; } playing = true; previewIndex = 0; els.video.style.display = "none"; els.canvas.style.display = "block"; els.onionLayer.style.display = "none";
+    if (playing) { stopPlaying(); return; } playing = true; previewIndex = 0; openDialog(els.playbackDialog); els.onionLayer.style.display = "none";
+    if (document.fullscreenEnabled && els.playbackDialog.requestFullscreen) els.playbackDialog.requestFullscreen().catch(() => {});
     els.play.innerHTML = '<svg><use href="#i-pause"/></svg><span>Stop</span>'; playNext();
   }
 
@@ -157,13 +169,16 @@ import { makeGif } from "./gif-encoder.js";
   async function restore() { try { const db = await openDb(), tx = db.transaction("project", "readonly"), store = tx.objectStore("project"); const frameRequest = store.get("frames"), speedRequest = store.get("speed"); const saved = await new Promise(resolve => { frameRequest.onsuccess = () => resolve(frameRequest.result || []); frameRequest.onerror = () => resolve([]); }); const savedSpeed = await new Promise(resolve => { speedRequest.onsuccess = () => resolve(speedRequest.result); speedRequest.onerror = () => resolve(null); }); frames = saved.map(f => ({ ...f, url: URL.createObjectURL(f.blob) })); if (savedSpeed) els.speed.value = savedSpeed; renderFrames(); updateOnion(); } catch (_) { renderFrames(); } }
 
   els.start.addEventListener("click", startCamera); els.capture.addEventListener("click", snap); els.play.addEventListener("click", togglePlay); els.save.addEventListener("click", exportGif);
-  els.strip.addEventListener("click", event => { const frame = event.target.closest(".frame"); if (frame) selectFrame(Number(frame.dataset.index)); });
-  els.redo.addEventListener("click", prepareRedo); els.remove.addEventListener("click", deleteFrame); els.closeActions.addEventListener("click", () => { selected = -1; renderFrames(); });
+  els.expandFrames.addEventListener("click", () => { picturePage = Math.floor(Math.max(0, selected) / boardPageSize()); renderPictureBoard(); openDialog(els.picturesDialog); });
+  els.closePictures.addEventListener("click", () => { selected = -1; resetDelete(); renderFrames(); els.picturesDialog.close(); }); els.previousPicturePage.addEventListener("click", () => { selected = -1; resetDelete(); picturePage--; renderFrames(); renderPictureBoard(); }); els.nextPicturePage.addEventListener("click", () => { selected = -1; resetDelete(); picturePage++; renderFrames(); renderPictureBoard(); });
+  els.pictureBoard.addEventListener("click", event => { const frame = event.target.closest(".board-frame"); if (!frame) return; selectFrame(Number(frame.dataset.index)); renderPictureBoard(); });
+  els.stopPlayback.addEventListener("click", stopPlaying); els.playbackDialog.addEventListener("cancel", event => { event.preventDefault(); stopPlaying(); });
+  els.redo.addEventListener("click", prepareRedo); els.remove.addEventListener("click", deleteFrame); els.closeActions.addEventListener("click", () => { selected = -1; resetDelete(); renderFrames(); renderPictureBoard(); });
   els.onion.addEventListener("click", () => { onion = !onion; updateOnion(); announce(onion ? "Ghost picture on" : "Ghost picture off"); });
   els.switchCamera.addEventListener("click", async () => { facing = facing === "environment" ? "user" : "environment"; await startCamera(); announce("Camera flipped"); });
   document.querySelectorAll(".effect").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".effect").forEach(b => { b.classList.toggle("active", b === button); b.setAttribute("aria-pressed", String(b === button)); }); effect = button.dataset.effect; updateLiveEffect(); announce(`${button.textContent.trim()} style`); }));
   els.speed.addEventListener("change", persist); els.helpButton.addEventListener("click", () => openDialog(els.help)); els.closeHelp.addEventListener("click", () => els.help.close()); els.gotIt.addEventListener("click", () => els.help.close());
-  els.closeExport.addEventListener("click", () => els.exportDialog.close()); window.addEventListener("beforeunload", () => stream?.getTracks().forEach(track => track.stop()));
+  els.closeExport.addEventListener("click", () => els.exportDialog.close()); window.addEventListener("resize", () => { renderFrames(); if (els.picturesDialog.open) renderPictureBoard(); }); window.addEventListener("beforeunload", () => stream?.getTracks().forEach(track => track.stop()));
   updateLiveEffect(); restore();
   try { if (!localStorage.getItem("wiggle-welcomed")) { setTimeout(() => openDialog(els.help), 350); localStorage.setItem("wiggle-welcomed", "yes"); } } catch (_) { /* Storage may be unavailable in private browsing. */ }
 })();

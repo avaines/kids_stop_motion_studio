@@ -44,3 +44,150 @@ main{width:min(1400px,94vw);margin:24px auto 0;display:grid;gap:18px;padding-bot
 @media(max-width:600px){.topbar{height:66px;padding:0 13px}.brand{font-size:21px}.brand-mark{width:34px;height:34px}.save-button span{display:none}.save-button{width:46px;padding:0}.top-actions{gap:8px}main{width:100%;margin:0;gap:10px;padding-bottom:10px}.camera-card,.timeline-card{border-radius:0;border-left:0;border-right:0}.viewfinder{min-height:57vw}.camera-empty{padding:15px}.start-art{display:none}.camera-empty h1{font-size:27px;margin:0 0 3px}.camera-empty p{font-size:14px;margin-bottom:13px}.start-button{min-height:50px}.camera-empty small{margin-top:11px;font-size:10px}.studio-controls{grid-template-columns:1fr 110px 1fr;padding:10px 8px}.capture-button{width:86px;height:86px;border-width:6px}.capture-button svg{width:32px;height:32px}.capture-zone strong{font-size:14px;margin-top:8px}.effect-options{gap:4px}.effect{min-height:37px;font-size:0;padding:0}.effect-dot{width:22px;height:22px}.tool-label{font-size:9px}.helper-button{justify-content:center;min-height:41px;padding:0}.helper-button span:not(.switch){display:none}.helper-button .switch{margin-left:2px}.helper-button.compact span{display:none}.timeline-card{padding:12px}.timeline-heading{gap:8px}.speed-control{grid-template-columns:auto auto 1fr auto}.speed-control input{width:100%}.frame-actions>span{display:none}.frame-actions button{flex:1;justify-content:center}.lesson-steps{gap:8px}.step-blob{width:74px;height:68px}.help-dialog{padding:28px 15px 22px}.export-actions{grid-template-columns:1fr}}
 @media(orientation:landscape) and (max-height:650px){.topbar{height:58px}main{margin-top:10px}.camera-card{grid-template-columns:minmax(0,1fr) 210px;min-height:0}.viewfinder{min-height:calc(100vh - 220px)}.studio-controls{display:flex;padding:10px 12px}.capture-button{width:88px;height:88px}.capture-zone{margin:6px 0}.timeline-card{padding:9px 15px}.frame-strip{min-height:77px}.frame{height:65px;flex-basis:90px}.timeline-heading{margin-bottom:5px}.help-dialog{transform:scale(.88)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+
+/* Icon-first controls and non-scrolling picture navigation. */
+.icon-button{width:54px;height:54px;font-size:20px}
+.save-button{height:56px;padding-inline:24px;font-size:16px}
+.effect{min-height:66px;border-width:3px;border-radius:16px;font-size:13px;gap:8px}
+.effect-dot{width:28px;height:28px;border-radius:9px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55)}
+.capture-button{width:150px;height:150px;border-width:10px}
+.capture-button svg{width:56px;height:56px}
+.capture-zone strong{font-size:19px}
+.helper-row{gap:9px}
+.helper-button{min-height:60px;border-radius:16px;padding-inline:13px;font-size:14px;gap:9px}
+.helper-button>svg{width:28px;height:28px}
+.helper-button .switch{width:36px;height:22px}
+.helper-button .switch:after{width:18px;height:18px}
+.helper-button[aria-pressed="true"] .switch:after{transform:translateX(14px)}
+.timeline-card{position:relative;padding:12px 18px 14px}
+.timeline-heading{gap:18px;margin-bottom:8px}
+.movie-actions{display:flex;gap:10px}
+.play-button,.expand-button{height:58px;min-width:118px;border:0;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;cursor:pointer}
+.play-button svg,.expand-button svg{width:29px;height:29px}
+.expand-button{background:#eee9ff;color:var(--purple);box-shadow:0 5px 0 #cfc5ff}
+.play-button{height:58px}
+.play-button:disabled,.expand-button:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.expand-button:not(:disabled):active{transform:translateY(3px);box-shadow:0 2px 0 #cfc5ff}
+.frame-browser{display:grid;grid-template-columns:58px minmax(0,1fr) 58px;gap:9px;align-items:center}
+.page-arrow,.board-arrow{width:58px;height:58px;border:0;border-radius:18px;background:var(--yellow);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 0 #d4b231}
+.page-arrow svg,.board-arrow svg{width:33px;height:33px;stroke-width:3}
+.page-arrow:disabled,.board-arrow:disabled{opacity:.18;box-shadow:none;cursor:default}
+.frame-strip{justify-content:center;overflow:hidden;min-height:96px;padding:3px 2px 5px}
+.frame{flex:1 1 0;min-width:0;max-width:150px;height:86px;border-width:4px;border-radius:15px}
+.frame .number{width:29px;height:29px;font-size:14px}
+.frame.is-last:after{content:"★";font-size:16px;padding:2px 6px;border-radius:7px}
+.empty-timeline span{width:50px;height:50px;border-radius:14px}
+.empty-timeline span svg{width:29px;height:29px}
+.frame-actions{position:absolute;z-index:6;right:18px;bottom:14px;min-height:62px;box-shadow:0 8px 25px rgba(52,38,102,.22)}
+.frame-actions button{min-height:48px;border-radius:12px;padding-inline:16px;font-size:14px}
+.frame-actions button svg{width:24px;height:24px}
+.frame-actions .close-actions{width:48px}
+.frame-actions .danger.confirm{background:#ffd7d2;outline:4px solid var(--coral);animation:confirm-remove .45s ease-in-out infinite alternate}
+@keyframes confirm-remove{to{transform:scale(1.06)}}
+
+.pictures-dialog,.playback-dialog{inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#f7f3ed;color:var(--ink)}
+.pictures-dialog{display:none;grid-template-rows:76px minmax(0,1fr) 86px}
+.pictures-dialog[open]{display:grid}
+.pictures-dialog header{display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,4vw);background:var(--paper);border-bottom:1px solid var(--line)}
+.picture-board-title{display:flex;align-items:center;gap:13px;font:800 27px "Baloo 2";color:var(--purple)}
+.picture-board-title svg{width:36px;height:36px}
+.pictures-dialog header button{width:58px;height:58px;border:0;border-radius:50%;background:#eee9ff;color:var(--purple);display:grid;place-items:center;cursor:pointer}
+.pictures-dialog header button svg{width:31px;height:31px;stroke-width:3}
+.picture-board{min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:14px;padding:18px max(18px,4vw)}
+.board-frame{position:relative;min-width:0;min-height:0;padding:0;border:5px solid white;border-radius:20px;background:#2a2638;overflow:hidden;box-shadow:0 6px 18px rgba(52,38,102,.16);cursor:pointer}
+.board-frame img{width:100%;height:100%;object-fit:contain;display:block}
+.board-frame span{position:absolute;left:8px;top:8px;width:42px;height:42px;border-radius:13px;background:var(--yellow);display:grid;place-items:center;font-size:19px;font-weight:800;box-shadow:0 3px 0 #cba923}
+.pictures-dialog footer{display:flex;align-items:center;justify-content:center;gap:24px;background:var(--paper);border-top:1px solid var(--line)}
+#picturePageDots{min-width:110px;text-align:center;font-size:22px;letter-spacing:7px;color:var(--purple)}
+
+.playback-dialog{display:none;background:#171421;overflow:hidden;place-items:center}
+.playback-dialog[open]{display:grid}
+.playback-dialog canvas{width:100%;height:100%;object-fit:contain;background:#171421}
+.playback-badge{position:absolute;left:max(18px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));opacity:.72}
+.stop-playback{position:absolute;right:max(24px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));width:112px;height:112px;border:8px solid rgba(255,255,255,.4);border-radius:50%;background:var(--coral);color:white;display:grid;place-items:center;align-content:center;gap:2px;font-weight:800;box-shadow:0 7px 0 #b9443a;cursor:pointer}
+.stop-playback svg{width:42px;height:42px;fill:currentColor}
+.stop-playback span{font-size:14px}
+
+@media(min-width:601px){
+  .app-shell{height:100dvh;min-height:0;display:grid;grid-template-rows:76px minmax(0,1fr);overflow:hidden}
+  main{height:auto;min-height:0;margin:12px auto;gap:12px;padding:0;grid-template-rows:minmax(0,1fr) auto}
+  .camera-card,.viewfinder{min-height:0}
+}
+@media(max-width:850px){
+  .capture-button{width:126px;height:126px}
+  .studio-controls{grid-template-columns:1fr 150px 1fr}
+  .movie-actions{grid-column:2;grid-row:1}
+  .play-button,.expand-button{min-width:58px;width:58px}
+  .movie-actions span{display:none}
+}
+@media(max-width:600px){
+  .icon-button,.save-button{width:54px;height:54px}
+  .studio-controls{grid-template-columns:1fr 126px 1fr}
+  .capture-button{width:116px;height:116px}
+  .effect{min-height:52px}
+  .effect-dot{width:31px;height:31px}
+  .helper-button{min-height:52px}
+  .timeline-heading{grid-template-columns:1fr auto}
+  .speed-control{grid-row:2;grid-column:1/-1}
+  .movie-actions{grid-column:2;grid-row:1}
+  .frame-browser{grid-template-columns:52px minmax(0,1fr) 52px;gap:5px}
+  .page-arrow{width:52px;height:52px}
+  .frame{height:78px}
+  .empty-timeline p{display:none}
+  .frame-actions{left:8px;right:8px;bottom:8px}
+  .picture-board{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:8px;padding:10px}
+  .picture-board-title b{display:none}
+  .stop-playback{width:96px;height:96px;right:16px;bottom:16px}
+}
+@media(orientation:landscape) and (max-height:650px){
+  .app-shell{grid-template-rows:58px minmax(0,1fr)}
+  .capture-button{width:112px;height:112px}
+  .effect{min-height:48px}
+  .helper-button{min-height:48px}
+  .frame{height:64px}
+  .frame-strip{min-height:70px}
+  .frame-browser{grid-template-columns:48px minmax(0,1fr) 48px}
+  .page-arrow{width:48px;height:48px}
+  .play-button,.expand-button{height:50px}
+  .picture-board{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}
+}
+
+/* Use the full screen: global actions now live in the camera tool pane. */
+.pane-actions{display:flex;align-items:center;gap:9px;margin-top:12px}
+.pane-actions .icon-button{flex:0 0 58px;width:58px;height:58px}
+.pane-actions .save-button{flex:1;min-width:0;height:58px;padding-inline:10px;font-size:13px}
+.app-shell{min-height:100dvh}
+@media(min-width:601px){.app-shell{grid-template-rows:minmax(0,1fr)}}
+
+/* Editing belongs inside the picture board, never over the camera screen. */
+.pictures-dialog{grid-template-rows:76px minmax(0,1fr) 94px}
+.pictures-dialog footer{justify-content:space-between;padding:0 max(18px,4vw);gap:20px}
+.board-pagination{display:flex;align-items:center;justify-content:center;gap:22px;margin:auto}
+.pictures-dialog .frame-actions{position:static;right:auto;bottom:auto;margin:0;padding:8px 10px;min-height:64px;box-shadow:none;flex:0 1 auto}
+.board-frame.selected{border-color:var(--purple);box-shadow:0 0 0 5px #dcd4ff,0 8px 22px rgba(52,38,102,.22)}
+
+@media(max-width:850px){
+  .pane-actions{margin-top:8px}
+  .pane-actions .save-button{width:58px;flex:0 0 58px}
+  .pane-actions .save-button span{display:none}
+  .pane-actions .save-button svg{width:27px;height:27px}
+}
+@media(max-width:700px){
+  .pictures-dialog{grid-template-rows:70px minmax(0,1fr) 88px}
+  .pictures-dialog footer{padding-inline:10px;gap:8px}
+  .board-pagination{gap:7px;margin:0 auto}
+  .pictures-dialog .frame-actions{position:absolute;left:8px;right:8px;bottom:8px;background:#eeeaff;justify-content:center}
+  .pictures-dialog .frame-actions>span,.pictures-dialog .frame-actions button:not(.close-actions){font-size:0}
+  .pictures-dialog .frame-actions button{width:58px;padding:0;justify-content:center}
+  .pictures-dialog .frame-actions button svg{width:29px;height:29px}
+  .pictures-dialog .frame-actions .danger.confirm{width:90px}
+  .pictures-dialog .frame-actions .danger.confirm svg{width:25px}
+}
+
+@media(max-width:700px){
+  .pictures-dialog footer.editing .board-pagination{display:none}
+  .pictures-dialog .frame-actions{position:static;left:auto;right:auto;bottom:auto;width:100%}
+}
+
+/* The lower area is now a compact movie toolbar; pictures live in the board. */
+.timeline-heading{margin-bottom:0}
