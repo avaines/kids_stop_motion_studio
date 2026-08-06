@@ -6,15 +6,9 @@
     for (let i = 0; i < 256; i++) out.push(Math.round(((i >> 5) & 7) * 255 / 7), Math.round(((i >> 2) & 7) * 255 / 7), (i & 3) * 85);
     return out;
   }
-  function indexPixels(rgba, width) {
+  function indexPixels(rgba) {
     const result = new Uint8Array(rgba.length / 4);
-    const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-    const clamp = value => Math.max(0, Math.min(255, value));
-    for (let p = 0, i = 0; p < rgba.length; p += 4, i++) {
-      const x = i % width, y = Math.floor(i / width), threshold = bayer[(y % 4) * 4 + (x % 4)] - 7.5;
-      const red = clamp(rgba[p] + threshold * 1.6), green = clamp(rgba[p + 1] + threshold * 1.6), blue = clamp(rgba[p + 2] + threshold * 3.2);
-      result[i] = (red & 0xe0) | ((green & 0xe0) >> 3) | (blue >> 6);
-    }
+    for (let p = 0, i = 0; p < rgba.length; p += 4, i++) result[i] = (rgba[p] & 0xe0) | ((rgba[p + 1] & 0xe0) >> 3) | (rgba[p + 2] >> 6);
     return result;
   }
   function lzw(data) {
@@ -59,7 +53,7 @@
     const out = [...new TextEncoder().encode("GIF89a"), ...bytes(width, 2), ...bytes(height, 2), 0xf7, 0, 0, ...palette()];
     out.push(0x21, 0xff, 0x0b, ...new TextEncoder().encode("NETSCAPE2.0"), 3, 1, 0, 0, 0);
     frames.forEach((rgba, i) => {
-      const indexed = indexPixels(rgba, width);
+      const indexed = indexPixels(rgba);
       out.push(0x21, 0xf9, 4, 4, ...bytes(Math.max(2, Math.round(delay / 10)), 2), 0, 0);
       out.push(0x2c, 0, 0, 0, 0, ...bytes(width, 2), ...bytes(height, 2), 0, 8);
       append(out, blocks(lzw(indexed)));

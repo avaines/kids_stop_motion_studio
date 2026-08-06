@@ -236,6 +236,71 @@ main{width:min(1400px,94vw);margin:24px auto 0;display:grid;gap:18px;padding-bot
 .pane-actions .save-button{display:flex;width:100%;max-width:none;min-width:0;flex:none;padding-inline:14px}
 .pane-actions .save-button span{display:inline}
 
+/* Phone and portrait layouts use a two-row control dock with no overflow. */
+@media(max-width:850px){
+  html,body{height:100%;overflow:hidden}
+  .app-shell{display:grid;width:100%;height:100dvh;min-height:0;overflow:hidden}
+  main{width:100%;height:100%;min-height:0;margin:0;padding:0;gap:0;grid-template-rows:minmax(0,1fr) 74px}
+  .camera-card{height:100%;min-height:0;border:0;border-radius:0;box-shadow:none;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 156px}
+  .viewfinder{height:100%;min-height:0}
+  .studio-controls{
+    height:156px;min-height:0;overflow:hidden;border:0;border-top:1px solid var(--line);padding:6px 7px;
+    display:grid;grid-template-columns:minmax(0,1fr) 90px minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:52px 88px;grid-template-areas:"effects effects effects effects" "ghost capture flip save";gap:5px;align-items:center;
+  }
+  .studio-controls>*{min-width:0}
+  .effects{grid-area:effects;min-width:0}
+  .effect-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .effect{width:100%;min-width:0;min-height:48px;height:48px;padding:0;border-width:2px;border-radius:13px;font-size:0;gap:0}
+  .effect-dot{width:30px;height:30px;flex:0 0 30px;border-radius:9px}
+  .tool-label,.capture-zone strong{display:none}
+  .capture-zone{grid-area:capture;margin:0;align-self:center}
+  .capture-button{width:84px;height:84px;border-width:6px;box-shadow:0 5px 0 #4930ca,0 8px 14px rgba(85,57,232,.2)}
+  .capture-button svg{width:37px;height:37px}
+  .helper-tools,.helper-row,.pane-actions{display:contents}
+  #onionButton{grid-area:ghost}
+  #switchButton{grid-area:flip}
+  #saveButton{grid-area:save}
+  .helper-button,.pane-actions .save-button{width:100%;min-width:0;height:58px;min-height:58px;margin:0;padding:0;border-radius:15px;display:grid;place-items:center}
+  .helper-button>svg,.pane-actions .save-button svg{width:28px;height:28px}
+  .helper-button span:not(.switch),.pane-actions .save-button span,#onionButton .switch{display:none}
+  .timeline-card{height:74px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:0 -8px 24px rgba(52,38,102,.09);padding:8px 10px;overflow:hidden}
+  .timeline-heading{height:100%;display:block;margin:0}
+  .timeline-heading>div:first-child,.speed-control{display:none}
+  .movie-actions{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .play-button,.expand-button{width:100%;height:56px;min-width:0;border-radius:16px}
+  .movie-actions span{display:inline;font-size:14px}
+}
+
+@media(max-width:380px){
+  .studio-controls{grid-template-columns:minmax(0,1fr) 82px minmax(0,1fr) minmax(0,1fr);padding-inline:5px;gap:4px}
+  .capture-button{width:78px;height:78px}
+  .effect-dot{width:27px;height:27px;flex-basis:27px}
+  .helper-button>svg,.pane-actions .save-button svg{width:25px;height:25px}
+}
+
+/* Very short landscape screens retain the side pane, but compress it safely. */
+@media(min-width:851px) and (max-height:500px){
+  main{grid-template-rows:minmax(0,1fr) 58px;gap:8px;margin:8px auto}
+  .timeline-card{height:58px;padding:4px 10px}
+  .timeline-heading{height:100%;display:flex;justify-content:flex-end;margin:0}
+  .timeline-heading>div:first-child,.speed-control{display:none}
+  .movie-actions{height:100%}
+  .play-button,.expand-button{height:48px}
+  .studio-controls{padding:4px 9px;justify-content:space-around}
+  .effect-options{gap:4px}
+  .effect{min-height:32px;height:32px;border-width:2px}
+  .effect-dot{width:18px;height:18px}
+  .capture-zone{margin:2px 0}
+  .capture-button{width:70px;height:70px;border-width:5px}
+  .capture-button svg{width:29px;height:29px}
+  .helper-row{gap:4px}
+  .helper-button{min-height:34px;height:34px}
+  .helper-button>svg{width:20px;height:20px}
+  .pane-actions{margin-top:3px}
+  .pane-actions .save-button{height:38px;min-height:38px}
+}
+
 /* Remove-all is isolated at the far-left, away from single-frame editing. */
 .pictures-dialog header{display:grid;grid-template-columns:82px minmax(0,1fr) 64px;gap:14px}
 .picture-board-title{justify-self:center}
