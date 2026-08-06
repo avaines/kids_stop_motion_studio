@@ -301,6 +301,44 @@ main{width:min(1400px,94vw);margin:24px auto 0;display:grid;gap:18px;padding-bot
   .pane-actions .save-button{height:38px;min-height:38px}
 }
 
+/* iPhone Safari landscape: browser chrome can leave less than 300px of height. */
+@media(orientation:landscape) and (max-height:500px) and (max-width:950px){
+  html,body{height:100%;overflow:hidden}
+  .app-shell{display:grid;width:100%;height:100dvh;min-height:0;overflow:hidden}
+  main{width:100%;height:100%;min-height:0;margin:0;padding:0;gap:0;grid-template-rows:minmax(0,1fr) 54px}
+  .camera-card{height:100%;min-height:0;border:0;border-radius:0;box-shadow:none;display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 68px}
+  .viewfinder{height:100%;min-height:0}
+  .camera-empty{padding:4px}
+  .camera-empty .start-art,.camera-empty h1,.camera-empty p,.camera-empty small{display:none}
+  .camera-empty .start-button{min-height:48px;padding-inline:22px;font-size:16px;box-shadow:0 4px 0 #cba923}
+  .studio-controls{
+    width:100%;height:68px;min-height:0;overflow:hidden;border:0;border-top:1px solid var(--line);
+    padding-top:4px;padding-bottom:6px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right));
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:56px;grid-template-areas:"ghost capture flip save";gap:6px;align-items:center;
+  }
+  .effects,.tool-label,.capture-zone strong{display:none}
+  .capture-zone{display:block;grid-area:capture;margin:0;align-self:center;text-align:center}
+  .capture-button{width:56px;height:56px;border-width:4px;box-shadow:0 3px 0 #4930ca;margin:auto}
+  .capture-button svg{width:26px;height:26px}
+  .helper-tools,.helper-row,.pane-actions{display:contents}
+  #onionButton{grid-area:ghost}
+  #switchButton{grid-area:flip}
+  #saveButton{grid-area:save}
+  .helper-button,.pane-actions .save-button{width:100%;min-width:0;height:50px;min-height:50px;margin:0;padding:0;border-radius:13px;display:grid;place-items:center}
+  .helper-button>svg,.pane-actions .save-button svg{width:25px;height:25px}
+  .helper-button span:not(.switch),.pane-actions .save-button span,#onionButton .switch{display:none}
+  .timeline-card{
+    width:100%;height:54px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:0 -5px 16px rgba(52,38,102,.08);
+    padding-top:4px;padding-bottom:5px;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right));overflow:hidden;
+  }
+  .timeline-heading{height:100%;display:block;margin:0}
+  .timeline-heading>div:first-child,.speed-control{display:none}
+  .movie-actions{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .play-button,.expand-button{width:100%;height:44px;min-width:0;border-radius:13px;box-shadow:none}
+  .play-button svg,.expand-button svg{width:24px;height:24px}
+  .movie-actions span{display:inline;font-size:13px}
+}
+
 /* Remove-all is isolated at the far-left, away from single-frame editing. */
 .pictures-dialog header{display:grid;grid-template-columns:82px minmax(0,1fr) 64px;gap:14px}
 .picture-board-title{justify-self:center}
